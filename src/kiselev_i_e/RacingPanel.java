@@ -25,7 +25,7 @@ public class RacingPanel extends JPanel implements ActionListener {
     private List<Star> stars;
     private Random random = new Random();
 
-    // Позиция для движения баннеров
+
     private double carPosition = 0.0;
 
     public RacingPanel() {
@@ -52,32 +52,29 @@ public class RacingPanel extends JPanel implements ActionListener {
     }
 
     private void initializeScenery() {
-        // Создаем неоновые баннеры на разных высотах и расстояниях
         for (int i = 0; i < 25; i++) {
             double offset = random.nextBoolean() ? 1.1 + random.nextDouble() * 0.4 : -1.1 - random.nextDouble() * 0.4;
-            double t = 3 + i * 4.0; // Больше расстояния между баннерами
+            double t = 3 + i * 4.0;
             sceneryObjects.add(new NeonBillboard(t, offset));
         }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // Обновляем прогресс движения для баннеров
+
         carPosition += GameConstants.TRACK_SPEED * 35;
 
-        // Обновляем позиции баннеров (они движутся навстречу)
         for (SceneryObject obj : sceneryObjects) {
             obj.update(GameConstants.TRACK_SPEED * 35);
         }
 
-        // Удаляем баннеры, которые прошли мимо
+
         sceneryObjects.removeIf(obj -> obj.getT() < -2.0);
 
-        // Добавляем новые баннеры впереди
         while (sceneryObjects.size() < 25) {
             double offset = random.nextBoolean() ? 1.1 + random.nextDouble() * 0.4 : -1.1 - random.nextDouble() * 0.4;
 
-            // Находим самый дальний баннер
+
             double maxT = -2.0;
             for (SceneryObject obj : sceneryObjects) {
                 if (obj.getT() > maxT) {
@@ -85,12 +82,12 @@ public class RacingPanel extends JPanel implements ActionListener {
                 }
             }
 
-            // Новый баннер размещается дальше самого дальнего
+
             double t = maxT + 5.0 + random.nextDouble() * 3.0;
             sceneryObjects.add(new NeonBillboard(t, offset));
         }
 
-        // Обновляем звезды
+
         for (Star star : stars) {
             star.update();
         }
@@ -104,22 +101,21 @@ public class RacingPanel extends JPanel implements ActionListener {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 
-        // --- 1. НЕБО ---
+
         drawSky(g2d);
 
-        // --- 2. ЗВЕЗДЫ ---
+
         drawStars(g2d);
 
-        // --- 3. ВЫСОТКИ НА ГОРИЗОНТЕ ---
+
         distantCity.draw(g2d, getWidth(), getHeight());
 
-        // --- 4. СТАТИЧЕСКАЯ ДОРОГА С МЕРЦАЮЩИМИ ПОЛОСАМИ ---
+
         drawStaticRoadWithFlickeringMarkings(g2d);
 
-        // --- 5. НЕОНОВЫЕ БАННЕРЫ (РИСУЕМ ПОСЛЕ ДОРОГИ) ---
         drawNeonBillboards(g2d);
 
-        // --- 6. АВТОМОБИЛЬ ---
+
         drawMovingCar(g2d);
     }
 
@@ -143,11 +139,11 @@ public class RacingPanel extends JPanel implements ActionListener {
         int screenWidth = getWidth();
         int screenHeight = getHeight();
 
-        // "Трава" (обочина)
+
         g2d.setColor(GameConstants.GRASS_COLOR);
         g2d.fillRect(0, GameConstants.HORIZON_Y, screenWidth, screenHeight - GameConstants.HORIZON_Y);
 
-        // СТАТИЧЕСКАЯ ДОРОГА (не меняет форму)
+
         int roadWidthAtBottom = (int)(screenWidth * 0.7);
         int roadWidthAtTop = 80;
 
@@ -168,11 +164,10 @@ public class RacingPanel extends JPanel implements ActionListener {
                 roadTopY
         };
 
-        // Статический цвет дороги
+
         g2d.setColor(GameConstants.TRACK_COLOR);
         g2d.fillPolygon(roadXPoints, roadYPoints, 4);
 
-        // МЕРЦАЮЩИЕ ПОЛОСЫ РАЗМЕТКИ
         drawFlickeringRoadMarkings(g2d, screenWidth, screenHeight);
     }
 
@@ -184,7 +179,6 @@ public class RacingPanel extends JPanel implements ActionListener {
 
 
         final int maxMarkerWidth = 15;
-        // Максимальная высота полосы
         final int maxMarkerHeight = 30;
         // -----------------------------------------------------------
 
@@ -195,25 +189,18 @@ public class RacingPanel extends JPanel implements ActionListener {
                 continue;
             }
 
-            // --- НОВЫЙ БЛОК: Расчет перспективы ---
-            // 1. Вычисляем "фактор перспективы" (от 0.0 до 1.0)
-            // 0.0 на горизонте, 1.0 у нижнего края экрана.
+
             double perspectiveFactor = (double)(currentY - GameConstants.HORIZON_Y) / (screenHeight - GameConstants.HORIZON_Y);
 
-            // 2. На основе фактора вычисляем текущую ширину и высоту полосы
-            // Чем дальше полоса (ближе к горизонту), тем она меньше.
             int currentMarkerWidth = (int)(maxMarkerWidth * perspectiveFactor);
             int currentMarkerHeight = (int)(maxMarkerHeight * perspectiveFactor);
 
-            // Чтобы избежать слишком мелких полос, можно добавить минимальный размер
             if (currentMarkerWidth < 1) currentMarkerWidth = 1;
             if (currentMarkerHeight < 1) currentMarkerHeight = 1;
 
-            // 3. Рассчитываем X-координату так, чтобы полоса оставалась по центру
             int markerX = screenWidth / 2 - currentMarkerWidth / 2;
             // -----------------------------------------------------------
 
-            // Логика мерцания
             double stripeFlicker = (Math.sin(currentTime * 0.003 + currentY * 0.1) + 1.0) / 2.0;
             int stripeAlpha = 80 + (int)(175 * stripeFlicker);
             stripeAlpha = Math.max(60, Math.min(255, stripeAlpha));
@@ -225,7 +212,6 @@ public class RacingPanel extends JPanel implements ActionListener {
                     stripeAlpha
             ));
 
-            // Используем новые, динамические размеры для отрисовки
             g2d.fillRect(markerX, currentY, currentMarkerWidth, currentMarkerHeight);
         }
     }

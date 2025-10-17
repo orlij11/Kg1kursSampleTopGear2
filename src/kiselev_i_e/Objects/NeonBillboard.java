@@ -38,15 +38,13 @@ public class NeonBillboard extends SceneryObject {
         AffineTransform originalTransform = g2d.getTransform();
         Composite originalComposite = g2d.getComposite();
 
-        // Добавляем легкое волнообразное движение по вертикали
+
         double wave = Math.sin(System.currentTimeMillis()) * scale * 3;
         int finalScreenY = screenY + (int)wave;
 
-        // Рисуем опору (более тонкую и изящную)
         g2d.setColor(new Color(80, 80, 80));
         g2d.fillRect(screenX - poleWidth / 2, finalScreenY - poleHeight, poleWidth, poleHeight);
 
-        // Рисуем свечение баннера
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.4f));
         g2d.setColor(glowColor);
         int glowSize = (int)(scale * 15);
@@ -54,30 +52,27 @@ public class NeonBillboard extends SceneryObject {
                 finalScreenY - poleHeight - boardHeight - glowSize/2,
                 boardWidth + glowSize, boardHeight + glowSize, 10, 10);
 
-        // Рисуем баннер с закругленными углами
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
         g2d.setColor(new Color(10, 10, 20, 200));
         g2d.fillRoundRect(screenX - boardWidth / 2, finalScreenY - poleHeight - boardHeight,
                 boardWidth, boardHeight, 8, 8);
 
-        // Рисуем неоновую рамку
+
         g2d.setColor(neonColor);
-        // ИСПРАВЛЕНИЕ: убираем умножение на scale для толщины линии
+
         g2d.setStroke(new BasicStroke(1.5f));
         g2d.drawRoundRect(screenX - boardWidth / 2, finalScreenY - poleHeight - boardHeight,
                 boardWidth, boardHeight, 8, 8);
 
-        // Текст на баннере
         int fontSize = Math.max(8, (int)(scale * 10));
         g2d.setFont(new Font("Arial", Font.BOLD, fontSize));
 
-        // Центрируем текст
+
         FontMetrics fm = g2d.getFontMetrics();
         int textWidth = fm.stringWidth(text);
         int textX = screenX - textWidth / 2;
         int textY = finalScreenY - poleHeight - boardHeight / 2 + fm.getAscent() / 2;
 
-        // Текст с неоновым свечением
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.6f));
         g2d.setColor(glowColor);
         for (int i = -2; i <= 2; i++) {
@@ -92,7 +87,7 @@ public class NeonBillboard extends SceneryObject {
         g2d.setColor(neonColor);
         g2d.drawString(text, textX, textY);
 
-        // Восстанавливаем настройки
+
         g2d.setComposite(originalComposite);
         g2d.setTransform(originalTransform);
     }
