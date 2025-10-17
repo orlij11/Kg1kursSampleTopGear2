@@ -1,9 +1,9 @@
 package kiselev_i_e;
 
-import kiselev_i_e.Objects.Car;
-import kiselev_i_e.Objects.DistantCity;
-import kiselev_i_e.Objects.NeonBillboard;
-import kiselev_i_e.Objects.Star;
+import kiselev_i_e.objects.Car;
+import kiselev_i_e.objects.DistantCity;
+import kiselev_i_e.objects.NeonBillboard;
+import kiselev_i_e.objects.Star;
 
 import javax.swing.*;
 import java.awt.*;

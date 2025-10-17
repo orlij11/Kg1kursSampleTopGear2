@@ -1,4 +1,4 @@
-package kiselev_i_e.Objects;
+package kiselev_i_e.objects;
 
 import kiselev_i_e.GameConstants;
 

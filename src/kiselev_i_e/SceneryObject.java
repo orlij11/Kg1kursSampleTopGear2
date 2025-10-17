@@ -1,6 +1,6 @@
 package kiselev_i_e;
 
-import kiselev_i_e.Objects.DistantCity;
+import kiselev_i_e.objects.DistantCity;
 
 import java.awt.Graphics2D;
 
