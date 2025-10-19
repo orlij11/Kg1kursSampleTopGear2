@@ -1,4 +1,4 @@
-package kiselev_i_e;
+package ru.vsu.cs.kiselev;
 
 import javax.swing.*;
 

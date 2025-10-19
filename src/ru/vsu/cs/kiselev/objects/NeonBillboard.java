@@ -1,6 +1,7 @@
-package kiselev_i_e.objects;
+package ru.vsu.cs.kiselev.objects;
 
-import kiselev_i_e.SceneryObject;
+import ru.vsu.cs.kiselev.DisplayContext;
+import ru.vsu.cs.kiselev.SceneryObject;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -10,24 +11,24 @@ public class NeonBillboard extends SceneryObject {
     private static final String[] NEON_TEXTS = {
             "RETRO", "NEON", "DREAMS",
             "NIGHT", "CITY", "DRIVE", "SPEED",
-            "CYBER","MIAMI", "OUTRUN"
+            "CYBER","MIAMI",
     };
 
     private String text;
     private Color neonColor;
     private Color glowColor;
-    private double waveOffset;
+
 
     public NeonBillboard(double t, double offset) {
         super(t, offset);
         this.text = NEON_TEXTS[(int)(Math.random() * NEON_TEXTS.length)];
         this.neonColor = getRandomNeonColor();
         this.glowColor = new Color(neonColor.getRed(), neonColor.getGreen(), neonColor.getBlue(), 80);
-        this.waveOffset = Math.random() * Math.PI * 2;
+
     }
 
     @Override
-    public void drawSelf(Graphics2D g2d, int screenX, int screenY, double scale) {
+    public void drawSelf(Graphics2D g2d, int screenX, int screenY, double scale, DisplayContext context) {
         int boardWidth = (int) (scale * 70);
         int boardHeight = (int) (scale * 30);
         int poleWidth = Math.max(1, (int)(scale * 2));
@@ -37,7 +38,6 @@ public class NeonBillboard extends SceneryObject {
 
         AffineTransform originalTransform = g2d.getTransform();
         Composite originalComposite = g2d.getComposite();
-
 
         double wave = Math.sin(System.currentTimeMillis()) * scale * 3;
         int finalScreenY = screenY + (int)wave;
@@ -57,7 +57,6 @@ public class NeonBillboard extends SceneryObject {
         g2d.fillRoundRect(screenX - boardWidth / 2, finalScreenY - poleHeight - boardHeight,
                 boardWidth, boardHeight, 8, 8);
 
-
         g2d.setColor(neonColor);
 
         g2d.setStroke(new BasicStroke(1.5f));
@@ -66,7 +65,6 @@ public class NeonBillboard extends SceneryObject {
 
         int fontSize = Math.max(8, (int)(scale * 10));
         g2d.setFont(new Font("Arial", Font.BOLD, fontSize));
-
 
         FontMetrics fm = g2d.getFontMetrics();
         int textWidth = fm.stringWidth(text);
@@ -77,7 +75,7 @@ public class NeonBillboard extends SceneryObject {
         g2d.setColor(glowColor);
         for (int i = -2; i <= 2; i++) {
             for (int j = -2; j <= 2; j++) {
-                if (Math.abs(i) + Math.abs(j) == 2) { // Только диагональные смещения
+                if (Math.abs(i) + Math.abs(j) == 2) {
                     g2d.drawString(text, textX + i, textY + j);
                 }
             }
@@ -87,7 +85,6 @@ public class NeonBillboard extends SceneryObject {
         g2d.setColor(neonColor);
         g2d.drawString(text, textX, textY);
 
-
         g2d.setComposite(originalComposite);
         g2d.setTransform(originalTransform);
     }
@@ -95,12 +92,12 @@ public class NeonBillboard extends SceneryObject {
     private Color getRandomNeonColor() {
         int type = (int)(Math.random() * 6);
         switch (type) {
-            case 0: return new Color(255, 0, 255);    // Розовый
-            case 1: return new Color(0, 255, 255);    // Голубой
-            case 2: return new Color(255, 255, 0);    // Желтый
-            case 3: return new Color(0, 255, 0);      // Зеленый
-            case 4: return new Color(255, 100, 0);    // Оранжевый
-            case 5: return new Color(200, 0, 255);    // Фиолетовый
+            case 0: return new Color(255, 0, 255);
+            case 1: return new Color(0, 255, 255);
+            case 2: return new Color(255, 255, 0);
+            case 3: return new Color(0, 255, 0);
+            case 4: return new Color(255, 100, 0);
+            case 5: return new Color(200, 0, 255);
             default: return new Color(255, 0, 255);
         }
     }

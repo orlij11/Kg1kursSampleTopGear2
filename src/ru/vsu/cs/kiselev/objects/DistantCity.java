@@ -1,6 +1,6 @@
-package kiselev_i_e.objects;
+package ru.vsu.cs.kiselev.objects;
 
-import kiselev_i_e.GameConstants;
+import ru.vsu.cs.kiselev.DisplayContext;
 
 import java.awt.*;
 import java.util.Random;
@@ -32,7 +32,7 @@ public class DistantCity {
         buildingHeights = new int[buildingCount];
         buildingWidths = new int[buildingCount];
         buildingPositions = new int[buildingCount];
-        windowLights = new boolean[buildingCount][50]; // Максимум 50 окон на здание
+        windowLights = new boolean[buildingCount][50];
 
         int totalWidth = 0;
         for (int i = 0; i < buildingCount; i++) {
@@ -41,23 +41,21 @@ public class DistantCity {
             buildingPositions[i] = totalWidth + random.nextInt(20);
             totalWidth += buildingWidths[i] + 10 + random.nextInt(20);
 
-
             for (int j = 0; j < 10; j++) {
                 windowLights[i][j] = random.nextDouble() > 0.4;
             }
         }
     }
 
-    public void draw(Graphics2D g2d, int screenWidth, int screenHeight) {
-        int cityBaseY = GameConstants.HORIZON_Y;
-
+    public void draw(Graphics2D g2d, DisplayContext context) {
+        int cityBaseY = context.getHorizonY();
         updateWindowFlicker();
 
         for (int i = 0; i < buildingCount; i++) {
-            drawSkyscraper(g2d, screenWidth, cityBaseY, i);
+            drawSkyscraper(g2d, context, cityBaseY, i);
         }
 
-        drawHorizonGlow(g2d, screenWidth);
+        drawHorizonGlow(g2d, context);
     }
 
     private void updateWindowFlicker() {
@@ -75,13 +73,13 @@ public class DistantCity {
         }
     }
 
-    private void drawSkyscraper(Graphics2D g2d, int screenWidth, int cityBaseY, int buildingIndex) {
+    private void drawSkyscraper(Graphics2D g2d, DisplayContext context, int cityBaseY, int buildingIndex) {
         int buildingWidth = buildingWidths[buildingIndex];
         int buildingHeight = buildingHeights[buildingIndex];
         int buildingX = buildingPositions[buildingIndex];
 
         int totalCityWidth = buildingPositions[buildingCount - 1] + buildingWidths[buildingCount - 1];
-        int cityStartX = (screenWidth - totalCityWidth) / 2;
+        int cityStartX = (context.getScreenWidth() - totalCityWidth) / 2;
         int finalBuildingX = cityStartX + buildingX;
         int buildingY = cityBaseY - buildingHeight;
 
@@ -133,81 +131,18 @@ public class DistantCity {
         }
     }
 
-    private void drawHorizonGlow(Graphics2D g2d, int screenWidth) {
+    private void drawHorizonGlow(Graphics2D g2d, DisplayContext context) {
         GradientPaint horizonGlow = new GradientPaint(
-                0, GameConstants.HORIZON_Y - 10, new Color(180, 50, 220, 100),
-                0, GameConstants.HORIZON_Y + 20, new Color(180, 50, 220, 0)
+                0, context.getHorizonY() - 10, new Color(180, 50, 220, 100),
+                0, context.getHorizonY() + 20, new Color(180, 50, 220, 0)
         );
 
         g2d.setPaint(horizonGlow);
-        g2d.fillRect(0, GameConstants.HORIZON_Y - 10, screenWidth, 30);
+        g2d.fillRect(0, context.getHorizonY() - 10, context.getScreenWidth(), 30);
 
-        // Линия горизонта
         g2d.setColor(new Color(200, 80, 240));
         g2d.setStroke(new BasicStroke(2));
-        g2d.drawLine(0, GameConstants.HORIZON_Y, screenWidth, GameConstants.HORIZON_Y);
+        g2d.drawLine(0, context.getHorizonY(), context.getScreenWidth(), context.getHorizonY());
         g2d.setStroke(new BasicStroke(1));
-    }
-
-    public static class Track {
-        private Random random = new Random();
-
-        public Track() {
-        }
-
-        public void update() {
-        }
-
-        public void drawStaticRoad(Graphics2D g2d, int screenWidth, int screenHeight) {
-            g2d.setColor(GameConstants.GRASS_COLOR);
-            g2d.fillRect(0, GameConstants.HORIZON_Y, screenWidth, screenHeight - GameConstants.HORIZON_Y);
-
-            int roadWidthAtBottom = (int)(screenWidth * 0.4);
-            int roadWidthAtTop = 80;
-            int roadBottomY = screenHeight;
-            int roadTopY = GameConstants.HORIZON_Y;
-
-            int[] roadXPoints = {
-                    (screenWidth - roadWidthAtBottom) / 2,
-                    (screenWidth + roadWidthAtBottom) / 2,
-                    (screenWidth + roadWidthAtTop) / 2,
-                    (screenWidth - roadWidthAtTop) / 2
-            };
-
-            int[] roadYPoints = {
-                    roadBottomY,
-                    roadBottomY,
-                    roadTopY,
-                    roadTopY
-            };
-
-            g2d.setColor(GameConstants.TRACK_COLOR);
-            g2d.fillPolygon(roadXPoints, roadYPoints, 4);
-
-            drawFlickeringMarkings(g2d, screenWidth, screenHeight);
-        }
-
-        private void drawFlickeringMarkings(Graphics2D g2d, int screenWidth, int screenHeight) {
-            long currentTime = System.currentTimeMillis();
-
-            double flicker = (Math.sin(currentTime * 0.004) + 1.0) / 2.0;
-            int baseAlpha = 120 + (int)(135 * flicker);
-
-            for (int y = GameConstants.HORIZON_Y + 50; y < screenHeight; y += 70) {
-                double stripeFlicker = (Math.sin(currentTime * 0.005 + y * 0.05) + 1.0) / 2.0;
-                int stripeAlpha = 100 + (int)(155 * stripeFlicker);
-
-                g2d.setColor(new Color(255, 0, 255, stripeAlpha));
-
-                int markerWidth = 4;
-                int markerHeight = 35;
-                int markerX = screenWidth / 2 - markerWidth / 2;
-                g2d.fillRect(markerX, y, markerWidth, markerHeight);
-            }
-        }
-
-        public double getCameraPosition() {
-            return 0.0; // Статичная камера
-        }
     }
 }

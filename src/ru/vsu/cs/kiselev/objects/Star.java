@@ -1,4 +1,6 @@
-package kiselev_i_e.objects;
+package ru.vsu.cs.kiselev.objects;
+
+import ru.vsu.cs.kiselev.DisplayContext;
 
 import java.awt.*;
 import java.util.Random;
@@ -12,9 +14,9 @@ public class Star {
 
     private static Random random = new Random();
 
-    public Star(int screenWidth, int maxY) {
-        this.x = random.nextInt(screenWidth);
-        this.y = random.nextInt(maxY); // Звезды только выше горизонта
+    public Star(DisplayContext context) {
+        this.x = random.nextInt(context.getScreenWidth());
+        this.y = random.nextInt(context.getHorizonY());
         this.size = 1 + random.nextFloat() * 2;
         this.alpha = random.nextFloat();
         this.alphaSpeed = 0.005f + random.nextFloat() * 0.01f;
